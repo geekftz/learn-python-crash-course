@@ -14,6 +14,19 @@ class Ship():
         # put each ship in the center at the bottom of the screen
         self.rect.centerx = self.screen_rect.centerx
         self.rect.bottom = self.screen_rect.bottom
+
+        # moving signs
+        self.moving_right = False
+        self.moving_left = False
+
+    def update(self):
+        # adjust the position of the ship according to the moving signs
+        if self.moving_right:
+            self.rect.centerx += 1
+        if self.moving_left:
+            self.rect.centerx -= 1
+
+
     def blitme(self):
         # draw ship at the designated position
         self.screen.blit(self.image, self.rect)
