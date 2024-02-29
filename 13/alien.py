@@ -12,9 +12,26 @@ class Alien(Sprite):
         # 加载外星人图像，并设置其rect属性
         self.image = pygame.image.load('images/alien.bmp')
         self.rect = self.image.get_rect()
-        # 每个外星人最初都在屏幕左上角附近
+        # 每个外星人最初都在屏幕左上角附近
         self.rect.x = self.rect.width
         self.rect.y = self.rect.height
+
+        # store exact position of alien
+        self.x = float(self.rect.x)
+
+    def check_edges(self):
+        """if alien is at the edge of the screen, then return True"""
+        screen_rect = self.screen.get_rect()
+        if self.rect.right >= screen_rect.right:
+            return True
+        elif self.rect.left <= 0:
+            return True
+
+    def update(self):
+        """move alien to right"""
+        self.x += self.ai_settings.alien_speed_factor * self.ai_settings.fleet_direction
+        self.rect.x = self.x
+
     # 存储外星人的准确位置 self.x = float(self.rect.x)
     def blitme(self):
         """在指定位置绘制外星人"""
