@@ -6,6 +6,8 @@ from bullet import Bullet
 
 from alien import Alien
 
+from time import sleep
+
 
 # old code
 # def check_events(ship):
@@ -54,7 +56,7 @@ def check_events(ai_settings, screen, ship, bullets):
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
 
-def update_screen(ai_settings, screen, ship, aliens, bullets):
+def update_screen(ai_settings, stats, screen, ship, aliens, bullets):
     # update the image on the screen and switch a new screen
     # redraw screen in every loop
     screen.fill(ai_settings.bg_color)
@@ -70,16 +72,25 @@ def update_screen(ai_settings, screen, ship, aliens, bullets):
     # make the recently drawn screen visible
     pygame.display.flip()
 
-def update_bullets(aliens, bullets):
+def update_bullets(ai_settings, screen, ship, aliens, bullets):
     bullets.update()
     # delete disappeared bullets
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
 
+    check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
+
+
+
+def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
     # check if any bullets have hit the alien
     # if that's the case, delete the corresponding bullets and aliens
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+
+    if len(aliens) == 0:
+        bullets.empty()
+        create_fleet(ai_settings, screen, ship, aliens)
 
 
 def fire_bullet(ai_settings, screen, ship, bullets):
@@ -135,9 +146,31 @@ def change_fleet_direction(ai_settings, aliens):
         alien.rect.y += ai_settings.fleet_drop_speed
     ai_settings.fleet_direction *= -1
 
-def update_aliens(ai_settings, aliens):
+def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
     check_fleet_edges(ai_settings, aliens)
     aliens.update()
+
+    # check the corresponding between aliens and ships
+    if pygame.sprite.spritecollideany(ship, aliens):
+        # print("Ship hit")
+        ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+
+def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
+    """respond to the ship hit by aliens"""
+    # reduce ships_left by one
+    stats.ships_left -= 1
+
+    # empty the aliens list and bullets list
+    aliens.empty()
+    bullets.empty()
+
+    # create a group of new aliens, and put the ship in the center at the bottom of the screen
+    create_fleet(ai_settings, screen, ship, aliens)
+    ship.center_ship()
+
+    # pause
+    sleep(0.5)
+
 
 
 
