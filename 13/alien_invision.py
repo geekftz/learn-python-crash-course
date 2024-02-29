@@ -16,13 +16,19 @@ def run_game():
     # create a group to store bullets
     bullets = Group()
 
+    aliens = Group()
+
+    # create aliens group
+    gf.create_fleet(ai_settings, screen, aliens)
+
+
     # start the main loop of the game
     while True:
         # observer keyboard events and mouse events
         gf.check_events(ai_settings, screen, ship, bullets)
         ship.update()
         gf.update_bullets(bullets)
-        gf.update_screen(ai_settings, screen, ship, bullets)
+        gf.update_screen(ai_settings, screen, ship, aliens, bullets)
 
 
 run_game()
