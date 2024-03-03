@@ -81,7 +81,7 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bul
         ship.center_ship()
 
 
-def update_screen(ai_settings, stats, screen, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button):
     # update the image on the screen and switch a new screen
     # redraw screen in every loop
     screen.fill(ai_settings.bg_color)
@@ -93,6 +93,9 @@ def update_screen(ai_settings, stats, screen, ship, aliens, bullets, play_button
     ship.blitme()
     aliens.draw(screen)
 
+    # show score information
+    sb.show_score()
+
     # if game is not active, draw play button
     if not stats.game_active:
         play_button.draw_button()
@@ -100,21 +103,28 @@ def update_screen(ai_settings, stats, screen, ship, aliens, bullets, play_button
     # make the recently drawn screen visible
     pygame.display.flip()
 
-def update_bullets(ai_settings, screen, ship, aliens, bullets):
+def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
     bullets.update()
     # delete disappeared bullets
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
 
-    check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
+    check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets)
 
 
 
-def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
+def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets):
     # check if any bullets have hit the alien
     # if that's the case, delete the corresponding bullets and aliens
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+
+    if collisions:
+        for aliens in collisions.values():
+            stats.score += ai_settings.alien_points
+            sb.prep_score()
+
+        check_high_score(stats, sb)
 
     if len(aliens) == 0:
         bullets.empty()
@@ -214,6 +224,12 @@ def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
         if alien.rect.bottom >= screen_rect.bottom:
             ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
             break
+
+def check_high_score(stats, sb):
+    """Check if a new highest score has been born"""
+    if stats.score > stats.high_score:
+        stats.high_score = stats.score
+        sb.prep_high_score()
 
 
 
