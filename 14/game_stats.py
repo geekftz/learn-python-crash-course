@@ -10,6 +10,7 @@ class GameStats():
 
         # it shouldn't reset the highest score in any situation
         self.high_score = 0
+        self.level = 1
 
     def reset_stats(self):
         """initialize statistics that may change during game runtime"""
