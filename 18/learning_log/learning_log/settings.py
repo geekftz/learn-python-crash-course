@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # my application program
-    'learning_logs'
+    'learning_logs',
+    'users'
 ]
 
 MIDDLEWARE = [
